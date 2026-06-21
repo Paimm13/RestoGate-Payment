@@ -193,14 +193,14 @@ private void tampilkanDetailDanInfo() {
         if (rsMaster.next()) {
             jLabel2.setText("ID Transaksi : " + rsMaster.getInt("id_transaksi"));
             jLabel3.setText("Nama Pelanggan : " + rsMaster.getString("nama_pelanggan"));
-            jLabel4.setText("Nomor Meja : Meja " + rsMaster.getString("no_meja"));
+            jLabel4.setText("Nomor Meja : " + rsMaster.getString("no_meja"));
             jLabel5.setText("Tanggal Bayar : " + rsMaster.getDate("tanggal_transaksi"));
         }
     } catch (Exception e) {
         System.out.println("Gagal memuat info master: " + e.getMessage());
     }
 
-    // LOGIKA PENGISIAN JTABLE DETAIL MENU
+    // PENGISIAN JTABLE DETAIL MENU
     DefaultTableModel model = new DefaultTableModel();
     model.addColumn("No");
     model.addColumn("Nama Menu");
