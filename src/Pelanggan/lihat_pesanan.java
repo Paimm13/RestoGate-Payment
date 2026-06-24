@@ -95,6 +95,7 @@ public class lihat_pesanan extends javax.swing.JFrame {
         jRadioButton3.setText("DINE IN");
 
         jRadioButton4.setText("TAKE AWAY");
+        jRadioButton4.addActionListener(this::jRadioButton4ActionPerformed);
 
         jButton2.setText("< Kembali");
         jButton2.addActionListener(this::jButton2ActionPerformed);
@@ -263,6 +264,10 @@ public class lihat_pesanan extends javax.swing.JFrame {
         new pelanggan_pesan().setVisible(true);
         dispose();
     }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jRadioButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton4ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jRadioButton4ActionPerformed
 
     /**
      * @param args the command line arguments
