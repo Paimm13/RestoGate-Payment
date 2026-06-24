@@ -19,7 +19,7 @@ import javax.swing.table.DefaultTableModel;
 
 public class pelanggan_pesan extends javax.swing.JFrame {
     String JK;
-    
+    private javax.swing.ButtonGroup bgJenisPesanan;
     DefaultTableModel modelKeranjang = new DefaultTableModel();
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(pelanggan_pesan.class.getName());
 
@@ -31,6 +31,9 @@ public class pelanggan_pesan extends javax.swing.JFrame {
         java.util.Date tanggalSekarang = new java.util.Date();
         jDateChooser1.setDate(tanggalSekarang);
         jDateChooser1.setEnabled(false);
+        bgJenisPesanan = new javax.swing.ButtonGroup();
+        bgJenisPesanan.add(jRadioButton1);
+        bgJenisPesanan.add(jRadioButton2);
         
         jComboBox1.addActionListener(new java.awt.event.ActionListener() {
         @Override
@@ -78,6 +81,8 @@ public class pelanggan_pesan extends javax.swing.JFrame {
         jButton5 = new javax.swing.JButton();
         jButton6 = new javax.swing.JButton();
         txtQty = new javax.swing.JSpinner();
+        jRadioButton1 = new javax.swing.JRadioButton();
+        jRadioButton2 = new javax.swing.JRadioButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -151,14 +156,26 @@ public class pelanggan_pesan extends javax.swing.JFrame {
         jButton6.setText("< Dashboard");
         jButton6.addActionListener(this::jButton6ActionPerformed);
 
+        jRadioButton1.setText("DINE IN");
+        jRadioButton1.addActionListener(this::jRadioButton1ActionPerformed);
+
+        jRadioButton2.setText("TAKE AWAY");
+        jRadioButton2.addActionListener(this::jRadioButton2ActionPerformed);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 503, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton1))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(70, 70, 70)
+                        .addComponent(jRadioButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jRadioButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButton1)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
@@ -240,7 +257,10 @@ public class pelanggan_pesan extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton1))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jButton1)
+                            .addComponent(jRadioButton1)
+                            .addComponent(jRadioButton2)))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(16, 16, 16)
                         .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -401,16 +421,26 @@ public class pelanggan_pesan extends javax.swing.JFrame {
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         // TODO add your handling code here:
         // 1. AMBIL INPUT DARI KASIR & VALIDASI
-    String namaPelanggan = jTextField1.getText().trim(); 
+String namaPelanggan = jTextField1.getText().trim(); 
     String noMeja = jTextField2.getText().trim();       
-    int jumlahBarisKeranjang = jTable2.getRowCount(); // Tabel kanan (keranjang)
-    
+    int jumlahBarisKeranjang = jTable2.getRowCount(); 
+    String jenisPesanan = "";
+
+    if (jRadioButton1.isSelected()) {
+        jenisPesanan = "DINE IN";
+    } else if (jRadioButton2.isSelected()) {
+        jenisPesanan = "TAKE AWAY";
+    } else {
+        JOptionPane.showMessageDialog(this, "Pilih jenis pesanan (DINE IN / TAKE AWAY) terlebih dahulu!");
+        return;
+    }
+
     if (namaPelanggan.isEmpty()) {
         JOptionPane.showMessageDialog(this, "Nama pelanggan harus diisi!");
         return;
     }
-    if (noMeja.isEmpty()) {
-        JOptionPane.showMessageDialog(this, "Nomor meja harus diisi!");
+    if (jenisPesanan.equals("DINE IN") && (noMeja.isEmpty() || noMeja.equals("-"))) {
+        JOptionPane.showMessageDialog(this, "Nomor meja harus diisi untuk DINE IN!");
         return;
     }
     if (jumlahBarisKeranjang == 0) {
@@ -418,7 +448,6 @@ public class pelanggan_pesan extends javax.swing.JFrame {
         return;
     }
     
-    // 2. AMBIL TANGGAL DARI JDATECHOOSER
     if (jDateChooser1.getDate() == null) {
         JOptionPane.showMessageDialog(this, "Tanggal transaksi tidak valid!");
         return;
@@ -426,7 +455,6 @@ public class pelanggan_pesan extends javax.swing.JFrame {
     java.util.Date dateFromChooser = jDateChooser1.getDate();
     java.sql.Date sqlDate = new java.sql.Date(dateFromChooser.getTime());
     
-    // 3. HITUNG TOTAL HARGA KESELURUHAN DARI KERANJANG
     int totalHargaSemua = 0;
     for (int i = 0; i < jumlahBarisKeranjang; i++) {
         int harga = Integer.parseInt(jTable2.getValueAt(i, 2).toString());
@@ -437,11 +465,8 @@ public class pelanggan_pesan extends javax.swing.JFrame {
     Connection conn = null;
     try {
         conn = koneksi.getConnection();
-        conn.setAutoCommit(false); // Transaksi manual agar aman (roll back jika ada yang gagal)
+        conn.setAutoCommit(false); 
         
-        // =========================================================================
-        // PROSES A: INSERT NAMA PELANGGAN & AMBIL ID AUTO INCREMENT-NYA
-        // =========================================================================
         String sqlPelanggan = "INSERT INTO pelanggan (nama_pelanggan) VALUES (?)";
         PreparedStatement psPelanggan = conn.prepareStatement(sqlPelanggan, java.sql.Statement.RETURN_GENERATED_KEYS);
         psPelanggan.setString(1, namaPelanggan);
@@ -453,30 +478,21 @@ public class pelanggan_pesan extends javax.swing.JFrame {
             idPelangganOtomatis = rsKeyPelanggan.getInt(1);
         }
         
-        // =========================================================================
-        // PROSES B: INSERT UTAMA KE tabel_transaksi (id_transaksi KOSONG / AUTO_INCREMENT)
-        // =========================================================================
-        // Perhatikan query: id_transaksi tidak ditulis agar MySQL mengisinya sendiri otomatis.
-        String sqlTransaksi = "INSERT INTO transaksi (id_pelanggan, no_meja, tanggal_transaksi, total_harga, status_pembayaran) VALUES (?, ?, ?, ?, 'Pending')";
-        
-        // Wajib menambahkan Statement.RETURN_GENERATED_KEYS agar Java bisa menangkap id_transaksi otomatisnya
+        String sqlTransaksi = "INSERT INTO transaksi (id_pelanggan, no_meja, tanggal_transaksi, total_harga, status_pembayaran, jenis_pesanan) VALUES (?, ?, ?, ?, 'Pending', ?)";
         PreparedStatement psTrx = conn.prepareStatement(sqlTransaksi, java.sql.Statement.RETURN_GENERATED_KEYS);
         psTrx.setInt(1, idPelangganOtomatis);
         psTrx.setString(2, noMeja);
         psTrx.setDate(3, sqlDate); 
         psTrx.setInt(4, totalHargaSemua);
+        psTrx.setString(5, jenisPesanan);
         psTrx.executeUpdate();
         
-        // Tangkap id_transaksi berupa angka INT hasil Auto Increment dari database
         int idTransaksiOtomatis = 0;
         ResultSet rsKeyTrx = psTrx.getGeneratedKeys();
         if (rsKeyTrx.next()) {
-            idTransaksiOtomatis = rsKeyTrx.getInt(1); // Ini akan menghasilkan angka urut 1, 2, 3, dst.
+            idTransaksiOtomatis = rsKeyTrx.getInt(1); 
         }
         
-        // =========================================================================
-        // PROSES C: INSERT ITEM KE DETAIL TRANSAKSI & POTONG STOK DI TABEL MENU
-        // =========================================================================
         String sqlDetail = "INSERT INTO detail_transaksi (id_transaksi, id_menu, nama_menu, harga, jumlah) VALUES (?, ?, ?, ?, ?)";
         PreparedStatement psDetail = conn.prepareStatement(sqlDetail);
         
@@ -487,36 +503,30 @@ public class pelanggan_pesan extends javax.swing.JFrame {
             String idMenu = jTable2.getValueAt(i, 0).toString();
             int qtyBeli = Integer.parseInt(jTable2.getValueAt(i, 3).toString());
             
-            // Atur parameter detail transaksi (Menggunakan setInt untuk ID Transaksi)
-            psDetail.setInt(1, idTransaksiOtomatis); // Memasukkan ID angka yang tadi ditangkap
+            psDetail.setInt(1, idTransaksiOtomatis); 
             psDetail.setString(2, idMenu);
             psDetail.setString(3, jTable2.getValueAt(i, 1).toString());
             psDetail.setInt(4, Integer.parseInt(jTable2.getValueAt(i, 2).toString()));
             psDetail.setInt(5, qtyBeli);
             psDetail.addBatch();
             
-            // Atur parameter potong stok menu
             psUpdateStok.setInt(1, qtyBeli);
             psUpdateStok.setString(2, idMenu);
             psUpdateStok.addBatch();
         }
         
-        // Eksekusi semua antrean batch secara bersamaan
         psDetail.executeBatch();
         psUpdateStok.executeBatch();
         
-        // JIKA SEMUA BERHASIL, SIMPAN PERMANEN KE DATABASE
         conn.commit();
         
-        JOptionPane.showMessageDialog(this, "Pesanan Berhasil Disimpan!\n"
-                + "ID Transaksi: " + idTransaksiOtomatis + " (Otomatis)\n"
-                + "Nama Pelanggan: " + namaPelanggan + " (ID: " + idPelangganOtomatis + ")\n"
-                + "No Meja: " + noMeja + "\n"
-                + "Status: Pending");
+        JOptionPane.showMessageDialog(this, "Pesanan Berhasil Disimpan!\nID Transaksi: " + idTransaksiOtomatis);
         
-        // 4. RESET FORM & BERSIHKAN TAMPILAN KERANJANG
         jTextField1.setText("");
         jTextField2.setText("");
+        jTextField2.setEnabled(true);
+        jRadioButton1.setSelected(false);
+        jRadioButton2.setSelected(false);
         if (txtQty != null) txtQty.setValue(0);
         
         DefaultTableModel model = (DefaultTableModel) jTable2.getModel();
@@ -527,7 +537,6 @@ public class pelanggan_pesan extends javax.swing.JFrame {
         dispose();
         
     } catch (Exception e) {
-        // Jika ada proses yang gagal, batalkan semuanya agar data tidak timpang/corrupt
         if (conn != null) {
             try { conn.rollback(); } catch (Exception ex) { ex.printStackTrace(); }
         }
@@ -546,6 +555,18 @@ public class pelanggan_pesan extends javax.swing.JFrame {
         new Dashboard().setVisible(true);
         dispose();
     }//GEN-LAST:event_jButton6ActionPerformed
+
+    private void jRadioButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton1ActionPerformed
+        // TODO add your handling code here:
+        jTextField2.setEnabled(true);
+        jTextField2.setText("");
+    }//GEN-LAST:event_jRadioButton1ActionPerformed
+
+    private void jRadioButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton2ActionPerformed
+        // TODO add your handling code here:
+        jTextField2.setEnabled(false);
+        jTextField2.setText("-");
+    }//GEN-LAST:event_jRadioButton2ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -640,6 +661,8 @@ public class pelanggan_pesan extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JRadioButton jRadioButton1;
+    private javax.swing.JRadioButton jRadioButton2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTable jTable1;

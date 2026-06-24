@@ -19,7 +19,6 @@ import koneksi.koneksi;
 public class lihat_pesanan extends javax.swing.JFrame {
     String idTransaksi = "";
     private javax.swing.ButtonGroup bgStatus;
-    private javax.swing.ButtonGroup bgJenisPesanan;
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(lihat_pesanan.class.getName());
 
     /**
@@ -34,9 +33,7 @@ public class lihat_pesanan extends javax.swing.JFrame {
         bgStatus.add(jRadioButton2);
         setSize(850,600);
         
-        bgJenisPesanan = new javax.swing.ButtonGroup();
-        bgJenisPesanan.add(jRadioButton3);
-        bgJenisPesanan.add(jRadioButton4);
+        
         }
 
     /**
@@ -55,8 +52,6 @@ public class lihat_pesanan extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         jRadioButton1 = new javax.swing.JRadioButton();
         jRadioButton2 = new javax.swing.JRadioButton();
-        jRadioButton3 = new javax.swing.JRadioButton();
-        jRadioButton4 = new javax.swing.JRadioButton();
         jButton2 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -92,11 +87,6 @@ public class lihat_pesanan extends javax.swing.JFrame {
 
         jRadioButton2.setText("Pending");
 
-        jRadioButton3.setText("DINE IN");
-
-        jRadioButton4.setText("TAKE AWAY");
-        jRadioButton4.addActionListener(this::jRadioButton4ActionPerformed);
-
         jButton2.setText("< Kembali");
         jButton2.addActionListener(this::jButton2ActionPerformed);
 
@@ -117,10 +107,6 @@ public class lihat_pesanan extends javax.swing.JFrame {
                                 .addGap(18, 18, 18)
                                 .addComponent(jRadioButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jRadioButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jRadioButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(28, 28, 28)
                                 .addComponent(jButton1)))
                         .addContainerGap())
                     .addGroup(layout.createSequentialGroup()
@@ -148,10 +134,7 @@ public class lihat_pesanan extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 236, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jButton1)
-                            .addComponent(jRadioButton3)
-                            .addComponent(jRadioButton4))))
+                        .addComponent(jButton1)))
                 .addContainerGap(126, Short.MAX_VALUE))
         );
 
@@ -190,27 +173,19 @@ public class lihat_pesanan extends javax.swing.JFrame {
         int uangKembalian = 0;
         String jenisPesanan = "";
 
-        if (jRadioButton3.isSelected()) {
-            jenisPesanan = "DINE IN";
-        } else if (jRadioButton4.isSelected()) {
-            jenisPesanan = "TAKE AWAY";
-        } else {
-            JOptionPane.showMessageDialog(null, "Pilih jenis pesanan (Dine In / Take Away) terlebih dahulu");
-            return;
-        }
-
         if (jRadioButton1.isSelected()) {
             status = "Lunas";
-            sql = "UPDATE transaksi SET status_pembayaran=?, lunas_transaksi=NOW(), jenis_pesanan=? WHERE id_transaksi=?";
+            sql = "UPDATE transaksi SET status_pembayaran=?, lunas_transaksi=NOW() WHERE id_transaksi=?";
             
             int totalHarga = 0;
             Connection connCheck = koneksi.getConnection();
-            String sqlCheck = "SELECT total_harga FROM transaksi WHERE id_transaksi = ?";
+            String sqlCheck = "SELECT total_harga, jenis_pesanan FROM transaksi WHERE id_transaksi = ?";
             java.sql.PreparedStatement pstCheck = connCheck.prepareStatement(sqlCheck);
             pstCheck.setString(1, idTransaksi);
             java.sql.ResultSet rsCheck = pstCheck.executeQuery();
             if (rsCheck.next()) {
                 totalHarga = rsCheck.getInt("total_harga");
+                jenisPesanan = rsCheck.getString("jenis_pesanan");
             }
             
             String inputTunai = JOptionPane.showInputDialog(this, "Total Belanja: Rp " + totalHarga + "\nMasukkan Uang Tunai Pelanggan:");
@@ -226,14 +201,13 @@ public class lihat_pesanan extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(this, "Input harus berupa angka!");
                 return;
             }
-            
             uangKembalian = uangTunai - totalHarga;
             
         } else if (jRadioButton2.isSelected()) {
             status = "Pending";
-            sql = "UPDATE transaksi SET status_pembayaran=?, waktu_selesai=NULL, jenis_pesanan=? WHERE id_transaksi=?";
+            sql = "UPDATE transaksi SET status_pembayaran=?, lunas_transaksi=NULL WHERE id_transaksi=?";
         } else {
-            JOptionPane.showMessageDialog(null, "Pilih status");
+            JOptionPane.showMessageDialog(null, "Pilih status pembayaran (Lunas / Pending) terlebih dahulu!");
             return;
         }
 
@@ -241,8 +215,7 @@ public class lihat_pesanan extends javax.swing.JFrame {
         java.sql.PreparedStatement pst = conn.prepareStatement(sql);
 
         pst.setString(1, status);
-        pst.setString(2, jenisPesanan);
-        pst.setString(3, idTransaksi);
+        pst.setString(2, idTransaksi);
         pst.executeUpdate();
 
         JOptionPane.showMessageDialog(null, "Status berhasil diubah & Waktu Pembayaran dicatat!");
@@ -264,10 +237,6 @@ public class lihat_pesanan extends javax.swing.JFrame {
         new pelanggan_pesan().setVisible(true);
         dispose();
     }//GEN-LAST:event_jButton2ActionPerformed
-
-    private void jRadioButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton4ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jRadioButton4ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -410,8 +379,6 @@ public class lihat_pesanan extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JRadioButton jRadioButton1;
     private javax.swing.JRadioButton jRadioButton2;
-    private javax.swing.JRadioButton jRadioButton3;
-    private javax.swing.JRadioButton jRadioButton4;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
     // End of variables declaration//GEN-END:variables
