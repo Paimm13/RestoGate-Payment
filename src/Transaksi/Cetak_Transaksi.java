@@ -272,7 +272,7 @@ private void cetakStrukKeLog() {
             }
 
             struk.append("========================================\n");
-            struk.append("             RESTOGATE PAYMENT          \n");
+            struk.append("                 RESTOGATE              \n");
             struk.append("         Jl. Mangga No 46, Jakarta      \n");
             struk.append("             Telp. 089677239028         \n");
             struk.append("========================================\n");
@@ -281,6 +281,7 @@ private void cetakStrukKeLog() {
             struk.append("No Meja      : ").append(rs.getString("no_meja")).append("\n");
             struk.append("Jenis        : ").append(tipePesanan).append("\n");
             struk.append("\n");
+            struk.append("Kasir        : ").append(koneksi.namaKasirLogin).append("\n");
             struk.append("").append(formatJamSelesai).append("\n");
             struk.append("========================================\n");
             

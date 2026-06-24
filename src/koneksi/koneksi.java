@@ -13,6 +13,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class koneksi {
+    public static String namaKasirLogin = "";
     private static Connection conn;
     public static Connection getConnection() {
         try {
