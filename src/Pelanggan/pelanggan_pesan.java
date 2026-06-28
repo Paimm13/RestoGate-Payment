@@ -47,7 +47,6 @@ public class pelanggan_pesan extends javax.swing.JFrame {
         modelKeranjang.addColumn("Harga");
         modelKeranjang.addColumn("Jumlah");
         
-        // Ganti 'jTable2' dengan nama variabel JTable kanan Anda yang asli
         jTable2.setModel(modelKeranjang);
     }
 
